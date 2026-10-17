@@ -1,0 +1,27 @@
+{
+  "name": "virtual-assistant",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "extract-ddl": "node src/db/extract-ddl.js",
+    "migrate": "node src/db/migrate.js",
+    "seed-vocab": "node src/memory/seed-vocab.js",
+    "embed-ddl": "node src/db/embed-ddl.js",
+    "repl": "REPL=true node src/index.js",
+    "seed-fake-org": "node src/db/seed-fake-org.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.23.0",
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.52.7",
+    "pg": "^8.12.0",
+    "pgvector": "^0.2.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.6.0"
+  }
+}

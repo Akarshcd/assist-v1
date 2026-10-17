@@ -1,0 +1,1015 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aura · Virtual Assistant</title>
+<style>
+/* ── Aura tokens ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #F8F5F0;
+  --surface:     #FFFFFF;
+  --surface2:    #F2EDE6;
+  --border:      #E5DDD4;
+  --border2:     #D6CCBF;
+
+  --ink:         #1C1915;
+  --ink2:        #5A554E;
+  --ink3:        #9B9690;
+
+  --nav-bg:      #FDFBF8;
+  --nav-border:  #EAE4DB;
+
+  --accent:      #7C5CF8;
+  --accent-s:    #F0EBFF;
+  --accent2:     #10A37F;
+  --accent2-s:   #E8F8F3;
+
+  --green:       #1E7E4A;
+  --green-s:     #E8F5EE;
+  --amber:       #B45309;
+  --amber-s:     #FEF3E2;
+  --red:         #C42B1C;
+  --red-s:       #FDECEA;
+
+  --r:  8px;
+  --r2: 12px;
+  --r3: 16px;
+  --nav-w: 216px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:         #0F0E0C;
+    --surface:    #1A1916;
+    --surface2:   #141210;
+    --border:     #2A2825;
+    --border2:    #363330;
+    --ink:        #F0EDE8;
+    --ink2:       #A09A93;
+    --ink3:       #706C67;
+    --nav-bg:     #0D0C0A;
+    --nav-border: #232118;
+    --accent:     #9D7EFF;
+    --accent-s:   #1D1530;
+    --accent2:    #2DB8B8;
+    --accent2-s:  #0D2828;
+    --green:      #3DBF72;
+    --green-s:    #0D2B1A;
+    --amber:      #F09030;
+    --amber-s:    #2A1A06;
+    --red:        #F0604C;
+    --red-s:      #2A0E0A;
+  }
+}
+
+/* forced dark toggle */
+[data-theme="dark"] {
+  --bg:#0F0E0C; --surface:#1A1916; --surface2:#141210;
+  --border:#2A2825; --border2:#363330;
+  --ink:#F0EDE8; --ink2:#A09A93; --ink3:#706C67;
+  --nav-bg:#0D0C0A; --nav-border:#232118;
+  --accent:#9D7EFF; --accent-s:#1D1530;
+  --accent2:#2DB8B8; --accent2-s:#0D2828;
+  --green:#3DBF72; --green-s:#0D2B1A;
+  --amber:#F09030; --amber-s:#2A1A06;
+  --red:#F0604C; --red-s:#2A0E0A;
+}
+[data-theme="light"] {
+  --bg:#F8F5F0; --surface:#FFFFFF; --surface2:#F2EDE6;
+  --border:#E5DDD4; --border2:#D6CCBF;
+  --ink:#1C1915; --ink2:#5A554E; --ink3:#9B9690;
+  --nav-bg:#FDFBF8; --nav-border:#EAE4DB;
+  --accent:#7C5CF8; --accent-s:#F0EBFF;
+  --accent2:#10A37F; --accent2-s:#E8F8F3;
+  --green:#1E7E4A; --green-s:#E8F5EE;
+  --amber:#B45309; --amber-s:#FEF3E2;
+  --red:#C42B1C; --red-s:#FDECEA;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+*::-webkit-scrollbar{width:5px;height:5px}
+*::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 13.5px/1.55 var(--font);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────────── */
+#sidebar {
+  width: var(--nav-w);
+  flex-shrink: 0;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--nav-border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.sb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 14px 16px;
+  border-bottom: 1px solid var(--nav-border);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.aura-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.logo-mark {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0.5;
+}
+
+.logo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(124, 92, 248, 0.5);
+}
+
+.logo-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+
+.sb-header-btns {
+  display: flex;
+  gap: 2px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink3);
+  font-size: 14px;
+  padding: 5px 6px;
+  border-radius: var(--r);
+  line-height: 1;
+  font-family: var(--font);
+  transition: background .1s, color .1s;
+}
+.icon-btn:hover { background: var(--border); color: var(--ink); }
+
+/* nav items */
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r);
+  text-decoration: none;
+  color: var(--ink2);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  width: 100%;
+  text-align: left;
+  transition: background .1s, color .1s;
+}
+.nav-item:hover { background: var(--border); color: var(--ink); }
+.nav-item.active { background: var(--accent-s); color: var(--accent); font-weight: 600; }
+
+.nav-icon {
+  font-size: 14px;
+  opacity: 0.8;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.sb-spacer { flex: 1; }
+
+.sb-footer {
+  margin: 0 12px;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sb-footer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+.sb-footer-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.sb-footer-sub  { font-size: 11px; color: var(--ink3); }
+
+/* ── Main area ───────────────────────────────────────────────────────────────── */
+#main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.page { display: none; padding: 28px 32px 48px; }
+.page.active { display: block; }
+
+/* ── Page header ─────────────────────────────────────────────────────────────── */
+.page-hd { margin-bottom: 24px; }
+.page-title { font-size: 21px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); margin-bottom: 4px; }
+.page-sub   { font-size: 13px; color: var(--ink3); }
+
+/* ── Stat grid ───────────────────────────────────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 18px 20px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-delta { font-size: 11.5px; font-weight: 500; color: var(--ink3); }
+.stat-delta.up   { color: var(--green); }
+.stat-delta.down { color: var(--red); }
+
+/* ── Panel ───────────────────────────────────────────────────────────────────── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  margin-bottom: 16px;
+}
+
+.panel-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title { font-size: 13.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px; }
+
+.panel-action {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  text-decoration: none;
+}
+.panel-action:hover { opacity: 0.75; }
+
+/* ── Sparkline ───────────────────────────────────────────────────────────────── */
+.spark-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 52px;
+  padding: 12px 20px 14px;
+}
+
+.spark-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  min-height: 3px;
+  transition: background .1s;
+}
+.spark-bar:hover { background: var(--accent); }
+.spark-bar.hi    { background: var(--accent); }
+
+/* ── Two-col ─────────────────────────────────────────────────────────────────── */
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ── Session rows ────────────────────────────────────────────────────────────── */
+.sess-list { display: flex; flex-direction: column; }
+
+.sess-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+  cursor: pointer;
+}
+.sess-row:last-child { border-bottom: none; }
+.sess-row:hover { background: var(--surface2); }
+
+.sess-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-s);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sess-body { flex: 1; min-width: 0; }
+
+.sess-id {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sess-preview {
+  font-size: 12px;
+  color: var(--ink3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sess-meta { text-align: right; flex-shrink: 0; }
+.sess-time  { font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
+.sess-turns {
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--ink2);
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* ── Activity feed ───────────────────────────────────────────────────────────── */
+.feed-item {
+  display: flex;
+  gap: 12px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.feed-item:last-child { border-bottom: none; }
+
+.feed-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.feed-text  { color: var(--ink2); line-height: 1.4; }
+.feed-text b { color: var(--ink); font-weight: 600; }
+.feed-time  { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+/* ── Badge ───────────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.badge.green  { background: var(--green-s);   color: var(--green); }
+.badge.amber  { background: var(--amber-s);   color: var(--amber); }
+.badge.red    { background: var(--red-s);     color: var(--red); }
+.badge.purple { background: var(--accent-s);  color: var(--accent); }
+.badge.teal   { background: var(--accent2-s); color: var(--accent2); }
+
+/* ── Skills page ─────────────────────────────────────────────────────────────── */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--ink2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all .1s;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.on { border-color: var(--accent); background: var(--accent-s); color: var(--accent); font-weight: 600; }
+
+.btn-primary {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--r);
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font);
+  margin-left: auto;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.skill-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,92,248,0.1);
+}
+
+.skill-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r);
+  background: var(--accent-s);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.skill-name  { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.skill-desc  { font-size: 12.5px; color: var(--ink3); line-height: 1.5; margin-bottom: 14px; }
+
+.skill-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.skill-meta { font-size: 11.5px; color: var(--ink3); }
+
+.btn-cfg {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color .1s;
+}
+.btn-cfg:hover { border-color: var(--accent); }
+
+/* ── Integrations ────────────────────────────────────────────────────────────── */
+.int-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.int-row:last-child { border-bottom: none; }
+
+.int-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.int-body { flex: 1; min-width: 0; }
+.int-name { font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.int-desc { font-size: 12px; color: var(--ink3); }
+.int-connected { font-size: 11px; color: var(--green); font-weight: 500; margin-top: 3px; }
+
+/* toggle */
+.toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--border2);
+  cursor: pointer;
+  transition: background .2s;
+}
+.toggle input:checked + .toggle-track { background: var(--accent); }
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .2s;
+}
+.toggle input:checked + .toggle-track::after { left: 18px; }
+
+/* ── Observability ───────────────────────────────────────────────────────────── */
+.obs-stats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.skill-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.skill-dist-row:last-child { margin-bottom: 0; }
+.skill-dist-name { width: 140px; font-size: 12.5px; color: var(--ink2); flex-shrink: 0; }
+.skill-dist-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.skill-dist-fill  { height: 100%; background: var(--accent); border-radius: 3px; }
+.skill-dist-pct   { width: 36px; font-size: 12px; color: var(--ink3); text-align: right; flex-shrink: 0; }
+
+/* trace table */
+.trace-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.trace-table th {
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink3);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+.trace-table td {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink2);
+  vertical-align: middle;
+}
+.trace-table tr:last-child td { border-bottom: none; }
+.trace-table tr:hover td { background: var(--surface2); }
+
+.lat-wrap { display: flex; align-items: center; gap: 8px; }
+.lat-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.lat-fill  { height: 100%; border-radius: 2px; background: var(--accent); }
+.lat-val   { font-size: 11.5px; min-width: 44px; color: var(--ink2); font-variant-numeric: tabular-nums; }
+
+/* ── Sessions / Chat ─────────────────────────────────────────────────────────── */
+#page-sessions { gap: 16px; }
+
+.chat-wrap {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+}
+
+.chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--nav-bg);
+}
+
+.chip {
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--ink2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all .1s;
+}
+.chip:hover { border-color: var(--accent); background: var(--accent-s); color: var(--accent); }
+
+.chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.msg { max-width: 80%; display: flex; flex-direction: column; gap: 4px; }
+.msg.user  { align-self: flex-end; align-items: flex-end; }
+.msg.bot   { align-self: flex-start; }
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: var(--r2);
+  font-size: 13.5px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+.msg.user .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 3px; }
+.msg.bot  .msg-bubble {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  border-bottom-left-radius: 3px;
+}
+
+.msg-time { font-size: 10.5px; color: var(--ink3); padding: 0 2px; }
+
+.msg-tbl-wrap { margin-top: 8px; overflow-x: auto; }
+.msg-tbl { border-collapse: collapse; font-size: 12px; background: var(--surface); min-width: 280px; }
+.msg-tbl th { text-align:left; padding: 6px 10px; background: var(--surface2); font-size: 10.5px; font-weight: 600; text-transform:uppercase; letter-spacing:.4px; color: var(--ink3); border-bottom: 1px solid var(--border); }
+.msg-tbl td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--ink2); }
+.msg-tbl tr:last-child td { border-bottom: none; }
+
+.msg-actions { display: flex; gap: 8px; margin-top: 6px; }
+.msg-action-btn {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-s);
+  border: none;
+  border-radius: 5px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.msg-action-btn:hover { opacity: 0.8; }
+
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--nav-bg);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 9px 14px;
+  font: 13.5px var(--font);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  outline: none;
+  transition: border-color .15s;
+}
+.chat-input:focus { border-color: var(--accent); }
+.chat-input::placeholder { color: var(--ink3); }
+
+.send-btn {
+  padding: 9px 18px;
+  font: 600 13px var(--font);
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: opacity .1s;
+}
+.send-btn:hover { opacity: 0.88; }
+
+/* snapshot side */
+.snapshot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.snapshot-row:last-child { border-bottom: none; }
+.snapshot-lbl { font-size: 12.5px; color: var(--ink3); }
+.snapshot-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ── Loading ─────────────────────────────────────────────────────────────────── */
+.loading { color: var(--ink3); font-size: 13px; padding: 20px; text-align: center; }
+
+/* Sessions layout */
+#page-sessions.active {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 280px;
+  gap: 16px;
+  align-items: start;
+}
+</style>
+</head><body>
+
+<!-- ── Sidebar ──────────────────────────────────────────────────────────────── -->
+<div id="sidebar">
+  <div class="sb-header">
+    <div class="aura-logo">
+      <div class="logo-mark">
+        <span class="logo-ring"></span>
+        <span class="logo-dot"></span>
+      </div>
+      <span class="logo-name">Aura</span>
+    </div>
+    <div class="sb-header-btns">
+      <button class="icon-btn" onclick="window.location='/console'" title="Dev console">⌥</button>
+      <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">◑</button>
+    </div>
+  </div>
+
+  <div class="nav-items">
+    <button class="nav-item active" data-page="dashboard"     onclick="nav(this,'dashboard')">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-item" data-page="skills"       onclick="nav(this,'skills')">
+      <span class="nav-icon">⬡</span> Skills
+    </button>
+    <button class="nav-item" data-page="integrations" onclick="nav(this,'integrations')">
+      <span class="nav-icon">⌥</span> Integrations
+    </button>
+    <button class="nav-item" data-page="observability" onclick="nav(this,'observability')">
+      <span class="nav-icon">◉</span> Observability
+    </button>
+    <button class="nav-item" data-page="sessions"     onclick="nav(this,'sessions')">
+      <span class="nav-icon">◎</span> Sessions
+    </button>
+  </div>
+
+  <div class="sb-spacer"></div>
+
+  <div class="sb-footer">
+    <div class="sb-footer-dot" id="health-dot"></div>
+    <div>
+      <div class="sb-footer-name">Aura v1.0</div>
+      <div class="sb-footer-sub">Virtual assistant</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- Dashboard -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-hd">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub" id="dash-date">Overview of Aura virtual assistant</div>
+    </div>
+
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total sessions</div><div class="stat-value" id="st-sess">—</div><div class="stat-delta" id="st-sess-d"></div></div>
+      <div class="stat-card"><div class="stat-label">Total turns</div><div class="stat-value" id="st-turns">—</div><div class="stat-delta" id="st-turns-d"></div></div>
+      <div class="stat-card"><div class="stat-label">Total tokens</div><div class="stat-value" id="st-tokens">—</div><div class="stat-delta" id="st-tokens-d"></div></div>
+      <div class="stat-card"><div class="stat-label">Avg latency today</div><div class="stat-value" id="st-lat">—</div><div class="stat-delta" id="st-lat-d"></div></div>
+    </div>
+
+    <!-- Sparkline -->
+    <div class="panel">
+      <div class="panel-hd">
+        <span class="panel-title">Sessions — last 12 days</span>
+        <span style="font-size:12px;color:var(--ink3)">Daily count</span>
+      </div>
+      <div class="spark-wrap" id="spark-wrap">
+        <div class="loading">Loading…</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Recent sessions -->
+      <div class="panel" style="margin-bottom:0">
+        <div class="panel-hd">
+          <span class="panel-title">Recent sessions</span>
+          <button class="panel-action" onclick="nav(document.querySelector('[data-page=sessions]'),'sessions')">View all →</button>
+        </div>
+        <div class="sess-list" id="recent-sess">
+          <div class="loading">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Activity / skill breakdown -->
+      <div class="panel" style="margin-bottom:0">
+        <div class="panel-hd">
+          <span class="panel-title">Skill distribution</span>
+        </div>
+        <div style="padding:14px 20px" id="skill-dist">
+          <div class="loading">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="page" id="page-skills">
+    <div class="page-hd">
+      <div class="page-title">Skills</div>
+      <div class="page-sub">Capabilities the assistant can invoke during a session</div>
+    </div>
+    <div class="filter-row" id="skill-filters">
+      <button class="filter-btn on" data-sf="all"      onclick="filterSkills(this,'all')">All</button>
+      <button class="filter-btn"    data-sf="active"   onclick="filterSkills(this,'active')">Active</button>
+      <button class="filter-btn"    data-sf="beta"     onclick="filterSkills(this,'beta')">Beta</button>
+      <button class="filter-btn"    data-sf="inactive" onclick="filterSkills(this,'inactive')">Inactive</button>
+      <button class="btn-primary">+ New skill</button>
+    </div>
+    <div class="skill-grid" id="skill-grid"></div>
+  </div>
+
+  <!-- Integrations -->
+  <div class="page" id="page-integrations">
+    <div class="page-hd">
+      <div class="page-title">Integrations</div>
+      <div class="page-sub">Connect Aura to external services, databases and messaging channels</div>
+    </div>
+    <div class="filter-row" id="int-filters">
+      <button class="filter-btn on" data-if="All"          onclick="filterInt(this,'All')">All</button>
+      <button class="filter-btn"    data-if="AI"            onclick="filterInt(this,'AI')">AI</button>
+      <button class="filter-btn"    data-if="Database"      onclick="filterInt(this,'Database')">Database</button>
+      <button class="filter-btn"    data-if="Messaging"     onclick="filterInt(this,'Messaging')">Messaging</button>
+      <button class="filter-btn"    data-if="Productivity"  onclick="filterInt(this,'Productivity')">Productivity</button>
+      <button class="filter-btn"    data-if="Developer"     onclick="filterInt(this,'Developer')">Developer</button>
+    </div>
+    <div class="panel"><div id="int-list"></div></div>
+  </div>
+
+  <!-- Observability -->
+  <div class="page" id="page-observability">
+    <div class="page-hd">
+      <div class="page-title">Observability</div>
+      <div class="page-sub">Trace every turn — latency, tokens and skill routing</div>
+    </div>
+    <div class="obs-stats">
+      <div class="stat-card"><div class="stat-label">Turns today</div><div class="stat-value" id="obs-turns">—</div></div>
+      <div class="stat-card"><div class="stat-label">Talk-to-DB</div><div class="stat-value" id="obs-tdb">—</div></div>
+      <div class="stat-card"><div class="stat-label">Chit-chat</div><div class="stat-value" id="obs-cc">—</div></div>
+      <div class="stat-card"><div class="stat-label">Avg tokens/turn</div><div class="stat-value" id="obs-tok">—</div></div>
+    </div>
+
+    <!-- Skill dist -->
+    <div class="panel">
+      <div class="panel-hd">
+        <span class="panel-title">Skill distribution (all time)</span>
+      </div>
+      <div style="padding:16px 20px" id="obs-skill-dist">
+        <div class="loading">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Trace table -->
+    <div class="panel">
+      <div class="panel-hd">
+        <span class="panel-title">Recent turns</span>
+        <div style="display:flex;gap:6px" id="trace-filters">
+          <button class="filter-btn on" data-tf="all" onclick="filterTrace(this,'all')" style="padding:3px 10px;font-size:11.5px">All</button>
+          <button class="filter-btn" data-tf="talk_to_db" onclick="filterTrace(this,'talk_to_db')" style="padding:3px 10px;font-size:11.5px">Talk-to-DB</button>
+          <button class="filter-btn" data-tf="chit_chat"  onclick="filterTrace(this,'chit_chat')"  style="padding:3px 10px;font-size:11.5px">Chit-chat</button>
+          <button class="filter-btn" data-tf="none"       onclick="filterTrace(this,'none')"        style="padding:3px 10px;font-size:11.5px">None</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto" id="trace-table-wrap">
+        <div class="loading">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions / Chat -->
+  <div class="page" id="page-sessions">
+    <div>
+      <div class="page-hd">
+        <div class="page-title">Sessions</div>
+        <div class="page-sub">Active conversation — live assistant</div>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-chips" id="chat-chips">
+          <span class="chip" onclick="handleChip(this)">How many employees do we have?</span>
+          <span class="chip" onclick="handleChip(this)">List all open projects</span>
+          <span class="chip" onclick="handleChip(this)">Show pending invoices</span>
+          <span class="chip" onclick="handleChip(this)">Departments and their managers</span>
+          <span class="chip" onclick="handleChip(this)">Which employees are on leave?</span>
+          <span class="chip" onclick="handleChip(this)">Recent purchase orders</span>
+        </div>
+        <div class="chat-msgs" id="chat-msgs">
+          <div class="msg bot">
+            <div class="msg-bubble">Hello! I'm Aura — your data assistant. Ask me anything about your CRM or HRM data.</div>
+            <div class="msg-time" id="chat-init-time"></div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chat-in" placeholder="Ask about your data — projects, employees, invoices…" onkeydown="onChatKey(event)"/>
+          <button class="send-btn" id="chat-send" onclick="chatSend()">Send</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel" id="sess-snapshot">
+        <div class="panel-hd"><span class="panel-title">Session info</span></div>
+        <div style="padding:14px 20px" id="sess-snapshot-body">
+          <div class="snapshot-row"><span class="snapshot-lbl">Session ID</span><span class="snapshot-val" id="sn-id" style="font-size:11px;font-family:monospace">—</span></div>
+          <div class="snapshot-row"><span class="snapshot-lbl">Turns</span><span class="snapshot-val" id="sn-turns" style="color:var(--accent)">0</span></div>
+          <div class="snapshot-row"><span class="snapshot-lbl">Last skill</span><span class="snapshot-val" id="sn-skill" style="font-size:12px">—</span></div>
+          <div class="snapshot-row"><span class="snapshot-lbl">Status</span><span class="snapshot-val" id="sn-status">Ready</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="dashboard.js"></script>
+</body></html>
